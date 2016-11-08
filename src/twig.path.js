@@ -56,6 +56,12 @@ module.exports = function (Twig) {
             file = file || "",
             val;
 
+        if (Array.isArray(template.base) && template.method === 'fs') {
+            return template.base.map(function(a){
+                return a + '/' + file;
+            })
+        }
+
         if (template.url) {
             if (typeof template.base !== 'undefined') {
                 base = template.base + ((template.base.charAt(template.base.length-1) === '/') ? '' : '/');

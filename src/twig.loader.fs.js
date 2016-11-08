@@ -46,7 +46,18 @@ module.exports = function(Twig) {
         };
         params.path = params.path || location;
 
-        if (params.async) {
+        if (Array.isArray(params.path)) {
+            for (var i = 0; i < params.path.length; i++) {
+                try {
+                    if (fs.statSync(params.path[i]).isFile()) {
+                        data = fs.readFileSync(params.path[i], 'utf8');
+                        loadTemplateFn(undefined, data);
+                        return template
+                    }
+                } catch (e) {}
+            }
+            throw new Twig.Error('Unable to find template file ' + params.path);
+        } else if (params.async) {
             fs.stat(params.path, function (err, stats) {
                 if (err || !stats.isFile()) {
                     throw new Twig.Error('Unable to find template file ' + params.path);
